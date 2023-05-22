@@ -217,29 +217,88 @@ private:
     return -9;
   }
 
+  /* This function takes as input the value of the 
+     RCT Phi Region and then returns the radian decial phi value
+   */
+  
   float convertRCTPhiCentral(uint32_t inputPhi) {
     const double regionPhiValues[20] = {
-      0.000,
-      0.349,
-      0.698,
-      1.047,
-      1.396,
-      1.744,
-      2.093,
-      2.442,
-      2.791,
-      -3.14159,
-      -2.791,
-      -2.442,
-      -2.093,
-      -1.744,
-      -1.396,
-      -1.047,
-      -0.698,
-      -0.349
+					0.000, //0th region
+					0.349, //1st region
+					0.698, //2nd region
+					1.047, //.... 
+					1.396,
+					1.744,
+					2.093,
+					2.442,
+					2.791,
+					-3.14159,
+					-2.791,
+					-2.442,
+					-2.093,
+					-1.744,
+					-1.396,
+					-1.047,
+					-0.698,
+					-0.349
     };
     return regionPhiValues[inputPhi];
   };
+
+    /* This function takes as input the value of the 
+       RCT Phi Region and then returns the radian decial phi value
+   */
+
+  //FINISHME
+  float convertRCTPhiUpperBound(uint32_t inputPhi) {
+    const double regionPhiValues[20] = {
+					0.174, //0th region upper bound
+					0.349, //1st region upper bound
+					0.698, //2nd region upper bound
+					1.047, //3rd region upper bound
+					1.396, //...
+					1.744,
+					2.093,
+					2.442,
+					2.791,
+					-3.14159,
+					-2.791,
+					-2.442,
+					-2.093,
+					-1.744,
+					-1.396,
+					-1.047,
+					-0.698,
+					-0.349
+    };
+    return regionPhiValues[inputPhi];
+  };
+
+  //FINISHME
+    float convertRCTPhiLowerBound(uint32_t inputPhi) {
+    const double regionPhiValues[20] = {
+					0.000, //
+					0.349,
+					0.698,
+					1.047,
+					1.396,
+					1.744,
+					2.093,
+					2.442,
+					2.791,
+					-3.14159,
+					-2.791,
+					-2.442,
+					-2.093,
+					-1.744,
+					-1.396,
+					-1.047,
+					-0.698,
+					-0.349
+    };
+    return regionPhiValues[inputPhi];
+  };
+  
 
   float convertRCTEtaCentral(uint32_t inputEta) {
     const double regionEtaValues[22] = {
