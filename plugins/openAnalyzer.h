@@ -1,6 +1,6 @@
 #ifndef openAnalyzer_H
 #define openAnalyzer_H
-
+// Author: Jorge Hernandez 
 // system include files
 #include <memory>
 #include <unistd.h>
