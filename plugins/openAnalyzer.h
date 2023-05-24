@@ -305,7 +305,7 @@ private:
 					-1.570,
 					-1.221,
 					-0.872,
-					-0.523,
+					-0.523
    };
    return regionPhiValues[inputPhi];
  };
@@ -341,6 +341,69 @@ private:
     return regionEtaValues[inputEta];
   };
 
+  float convertRCTEtaRightBound (uint32_t inputEta) {
+    const double regionEtaValues[22] = {
+     -4.5,
+     -4,
+     -3.5,
+     -3,
+     -2.172,
+     -1.740,
+     -1.392,
+     -1.044,
+     -0.696,
+     -0.348,
+     0,
+     0.348,
+     0.696,
+     1.044,
+     1.392,
+     1.74,
+     2.172,
+     3.00,
+     3.50,
+     4.00,
+     4.50,
+     5.00
+    };
+
+    return regionEtaValues[inputEta]; 
+  };
+
+
+  float converRCTEtaLeftBound (uint32_t inputEta) {
+    const double regionEtaValues[22] ={
+      -5 
+      -4.5,
+      -4,
+      -3.5,
+      -3,
+      -2.172,
+      -1.740,
+      -1.392,
+      -1.044,
+      -0.696,
+      -0.348,
+      0,
+      0.348,
+      0.696,
+      1.044,
+      1.392,
+      1.74,
+      2.172,
+      3,
+      3.5,
+      4,
+      4.5
+    }; 
+
+      return regionEtaValues[inputEta];	
+
+  };
+
+
+
+  
   edm::EDGetTokenT< vector <reco::PFCandidate> > pfToken_;  //used to select what ecal rechits to read from configuration file
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
