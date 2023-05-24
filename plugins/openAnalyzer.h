@@ -1,9 +1,7 @@
+
 #ifndef openAnalyzer_H
 #define openAnalyzer_H
 
-//Hello This is a test
-
-// Author: Jorge Hernandez 
 // system include files
 #include <memory>
 #include <unistd.h>
@@ -253,54 +251,66 @@ private:
    */
 
   //FINISHME
-  float convertRCTPhiUpperBound(uint32_t inputPhi) {
-    const double regionPhiValues[20] = {
-					0.174, //0th region upper bound
-					0.349, //1st region upper bound
-					0.698, //2nd region upper bound
-					1.047, //3rd region upper bound
-					1.396, //...
-					1.744,
-					2.093,
-					2.442,
-					2.791,
-					-3.14159,
-					-2.791,
-					-2.442,
-					-2.093,
-					-1.744,
-					-1.396,
-					-1.047,
-					-0.698,
-					-0.349
-    };
-    return regionPhiValues[inputPhi];
-  };
+   float convertRCTPhiUpperBound(uint32_t inputPhi) {
+   const double regionPhiValues[20] = {
 
+
+					0.174, //0th region upper bound
+					0.523, //1st region upper bound
+					0.872, //2nd region upper bound
+					1.221, //3rd region upper bound
+					1.570, //...
+					1.919,
+					2.268,
+					2.617,
+					2.967,
+					-2.967,
+					-2.617,
+					-2.268,
+					-1.919,
+					-1.570,
+					-1.221,
+					-0.872,
+					-0.523,
+					-0.174
+
+
+   };
+
+
+   return regionPhiValues[inputPhi];
+
+   },
+
+   
   //FINISHME
-    float convertRCTPhiLowerBound(uint32_t inputPhi) {
-    const double regionPhiValues[20] = {
-					0.000, //
-					0.349,
-					0.698,
-					1.047,
-					1.396,
-					1.744,
-					2.093,
-					2.442,
-					2.791,
-					-3.14159,
-					-2.791,
-					-2.442,
-					-2.093,
-					-1.744,
-					-1.396,
-					-1.047,
-					-0.698,
-					-0.349
-    };
-    return regionPhiValues[inputPhi];
-  };
+
+     
+        float convertRCTPhiLowerBound(uint32_t inputPhi) {
+   const double regionPhiValues[20] = {
+					-0.174, //
+					0.174, //0th region 
+					0.523, //1st region 
+					0.872, //2nd region 
+					1.221, //3rd region 
+					1.570, //...
+					1.919,
+					2.268,
+					2.617,
+					2.967,
+					-2.967,
+					-2.617,
+					-2.268,
+					-1.919,
+					-1.570,
+					-1.221,
+					-0.872,
+					-0.523,
+   };
+   return regionPhiValues[inputPhi];
+ };
+
+
   
 
   float convertRCTEtaCentral(uint32_t inputEta) {
