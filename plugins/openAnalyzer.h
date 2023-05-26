@@ -280,7 +280,7 @@ private:
 
    return regionPhiValues[inputPhi];
 
-   },
+   };
 
    
   //FINISHME

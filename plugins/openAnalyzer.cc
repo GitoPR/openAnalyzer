@@ -51,7 +51,7 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
 #endif
   //now do what ever initialization is needed
-  
+  TFileDirectory folder;  
   regionTree = folder.make<TTree>("EfficiencyTree", "Efficiency Tree");
   regionTree->Branch("run",        &run,     "run/I");
   regionTree->Branch("lumi",       &lumi,    "lumi/I");
@@ -75,7 +75,6 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
 
   regionEtaFine   = folder.make<TH1F>( "region_eta_Fine"  , "eta", 88, 1, 88. );
   regionPhiFine   = folder.make<TH1F>( "region_phi_Fine"  , "phi", 72, 1, 72. );
-
 
 }
 

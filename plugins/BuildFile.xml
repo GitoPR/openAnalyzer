@@ -50,8 +50,6 @@
 <use   name="RecoVertex/AdaptiveVertexFit"/>
 <use   name="root"/>
 <use   name="L1Trigger/L1TCaloLayer1"/>
-<use   name="L1Trigger/L1TCaloSummary"/>
-<use   name="L1Trigger/openAnalyzer"/>
 <library   file="*.cc" name="CICADAopenAnalyzerPlugins">
   <flags EDM_PLUGIN="1"/>
 </library>
