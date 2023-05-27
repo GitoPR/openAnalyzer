@@ -1,4 +1,4 @@
-
+// this is a test for github
 #ifndef openAnalyzer_H
 #define openAnalyzer_H
 
