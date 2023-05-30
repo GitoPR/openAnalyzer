@@ -112,7 +112,15 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       allRegions[ieta][iphi].iPhi = iphi;
       allRegions[ieta][iphi].eta = convertRCTEtaCentral(ieta);
       allRegions[ieta][iphi].phi = convertRCTPhiCentral(iphi);
-      // COMPLETE ME: add in the left and right values for each eta and phi value
+      allRegions[ieta][iphi].phiUp = convertRCTPhiUpperBound(iphi);
+      allRegions[ieta][iphi].phiLow = convertRCTPhiLowerBound(iphi);
+      allRegions[ieta][iphi].etaLeft = convertRCTEtaLeftBound(ieta);
+      allRegions[ieta][iphi].etaRight = convertRCTEtaRightBound(ieta);
+ 
+
+
+
+ // COMPLETE ME: add in the left and right values for each eta and phi value
 
     }
   }

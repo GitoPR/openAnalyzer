@@ -84,8 +84,8 @@ private:
     int iPhi;
     int etaRight;
     int etaLeft;
-    int phiRight;
-    int phiLeft;
+    int phiUp;
+    int phiLow;
   };
   
   struct tRegion{
@@ -96,8 +96,8 @@ private:
     float phi;
     float etaRight;
     float etaLeft;
-    float phiRight;
-    float phiLeft;
+    float phiUp;
+    float phiLow;
   };
 
 
