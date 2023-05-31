@@ -123,7 +123,7 @@ private:
   TH1F* regionHitEta;
   TH1F* regionHitPhi;
   TTree* regionTree;
-  //TFileDirectory folder;
+  TFileDirectory folder;
 
   int run, lumi, event;
   float nvtx;
