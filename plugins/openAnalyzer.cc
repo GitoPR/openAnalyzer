@@ -52,7 +52,9 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
 #endif
   //now do what ever initialization is needed
   
-  folder = tfs_-> mkdir("data") 
+  folder = tfs_-> mkdir("data");
+
+  
   
   regionTree = folder.make<TTree>("EfficiencyTree", "Efficiency Tree");
   regionTree->Branch("run",        &run,     "run/I");
@@ -64,7 +66,12 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
   regionTree->Branch("vRegionPhi", &vRegionPhi );
   regionTree->Branch("vRegionEG",  &vRegionEG  );
   regionTree->Branch("vRegionTau", &vRegionTau );
+  
 
+  regionTree->Branch("vRegionCal", &vRegionCal );
+  regionTree->Branch("vRegionEcal", &vRegionEcal );
+  regionTree->Branch("vRegionHcal", &vRegionHcal );
+  
   nEvents       = folder.make<TH1F>( "nEvents"  , "nEvents", 2,  0., 1. );
 
   regionHitEta  = folder.make<TH1F>( "regionHit_eta"  , "eta", 16, 1, 16. );
@@ -74,9 +81,16 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
   regionEta     = folder.make<TH1F>( "region_eta"  , "eta", 22, 1, 22. );
   regionPhi     = folder.make<TH1F>( "region_phi"  , "phi", 72, 1, 72. );
   regionPt      = folder.make<TH1F>( "region_pt"  , "pt", 100, 0, 100. );
+ 
+  regionCal     = folder.make<TH1F>("region_cal", "Cal", 10, 0 ,100);  
+  regionHcal    = folder.make<TH1F>("region_hcal","Ecal", 10, 0, 100 ) ;
+  regionEcal    = folder.make<TH1F>("region_ecal"," Hcal", 10 , 0 , 100) ; 
+ 
+regionEtaFine   = folder.make<TH1F>( "region_eta_Fine"  , "eta", 88, 1, 88. );
+regionPhiFine   = folder.make<TH1F>( "region_phi_Fine"  , "phi", 72, 1, 72. );
 
-  regionEtaFine   = folder.make<TH1F>( "region_eta_Fine"  , "eta", 88, 1, 88. );
-  regionPhiFine   = folder.make<TH1F>( "region_phi_Fine"  , "phi", 72, 1, 72. );
+  
+
 
 }
 
@@ -107,8 +121,8 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //First, create the regions
   tRegion allRegions[22][18];
 
-  for(int ieta = 0; ieta < 22; ieta++){
-    for(int iphi = 0; iphi < 18; iphi++){
+  for(int ieta = 0; ieta < 21; ieta++){
+    for(int iphi = 0; iphi < 17; iphi++){
       allRegions[ieta][iphi].pt = 0;
       allRegions[ieta][iphi].iEta = ieta;
       allRegions[ieta][iphi].iPhi = iphi;
@@ -126,11 +140,16 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     }
   }
+  
+
 
   //clear the region vectors
   vRegionEt.clear();
   vRegionEta.clear();
   vRegionPhi.clear();
+  vRegionCal.clear();
+  vRegionEcal.clear();
+  vRegionHcal.clear();
   //Tau and EG are not needed currently
   vRegionTau.clear();
   vRegionEG.clear();
@@ -147,8 +166,40 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     //find the appropriate region and add in region energy to the tRegion
 
     //Add that to the correct tRegion in the AllRegions collection
+	
+	int eta = pfCand.positionAtECALEntrance().eta();
+	int phi = pfCand.positionAtECALEntrance().phi();
+	int Region_ieta = 0; 
+	int Region_iphi = 0; 
 
-    
+   
+
+	for(int ieta = 0; ieta < 22; ieta ++ ) {
+
+	  if (eta < convertRCTEtaRightBound(ieta) && eta > convertRCTEtaLeftBound(ieta)){
+	    
+	    Region_ieta = ieta; 
+	       break; 
+	  }
+
+	}
+	  for(int iphi = 0 ; iphi < 18 ; iphi++) {
+
+	    if ( phi > convertRCTPhiLowerBound(iphi) && phi < convertRCTPhiUpperBound(iphi)){
+	      
+	      Region_iphi = iphi; 
+	      break;
+	      
+	    }
+      }    
+
+	  allRegions[Region_ieta][Region_iphi].hcalEnergy = hcalEnergy;
+	  allRegions[Region_ieta][Region_iphi].ecalEnergy = ecalEnergy;
+  
+	  allRegions[Region_ieta][Region_iphi].calEnergy = hcalEnergy + ecalEnergy; 
+
+	  
+
     ///////ignore for now
     //if(i<20){
     //std::cout<<"tower eta, tower phi: "<<towerEta<<", "<<towerPhi<<std::endl;
@@ -168,6 +219,9 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     vRegionEt.push_back(region->pt);
     vRegionEta.push_back(region->eta);
     vRegionPhi.push_back(region->phi);
+    vRegionCal.push_back(region->calEnergy); 
+    vRegionEcal.push_back(region->ecalEnergy); 
+    vRegionHcal.push_back(region->hcalEnergy);
 
     //we don't have this for now
     //vRegionEG.push_back(isEgammaLike);
@@ -176,9 +230,16 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     regionPt->Fill(region->pt);
     regionEta->Fill(region->eta);
     regionPhi->Fill(region->phi);
-    
-  }
+    regionCal->Fill(region->calEnergy);
+    regionEcal->Fill(region->hcalEnergy);
+    regionHcal->Fill(region->ecalEnergy);  
+
+}
   regionTree->Fill();
+
+  //I think this might be the proble, cause the Tree branches dont include vRegionCal and so on// 
+
+ 
 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE

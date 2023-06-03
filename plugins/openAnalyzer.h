@@ -1,3 +1,4 @@
+
 // this is a test for github
 #ifndef openAnalyzer_H
 #define openAnalyzer_H
@@ -98,7 +99,11 @@ private:
     float etaLeft;
     float phiUp;
     float phiLow;
+    float hcalEnergy;
+    float ecalEnergy;
+    float calEnergy; 
   };
+
 
 
   edm::Service<TFileService> tfs_;
@@ -110,6 +115,11 @@ private:
   std::vector<float> vRegionPhi;
   std::vector<float> vRegionTau;
   std::vector<float> vRegionEG;
+  std::vector<float> vRegionCal;
+  std::vector<float> vRegionEcal;
+  std::vector<float> vRegionHcal; 
+
+
 
   TH1F* nEvents;
 
@@ -118,6 +128,9 @@ private:
   TH1F* regionPt;
   TH1F* regionEtaFine;
   TH1F* regionPhiFine;
+  TH1F* regionCal; 
+  TH1F* regionHcal;
+  TH1F* regionEcal;
   TH1F* regionTotal;
 
   TH1F* regionHitEta;
@@ -181,7 +194,7 @@ private:
 	break;
       }
     }
-    std::cout<<"OUT OF BOUNDS!!!!  inputeta: "<<inputEta<<std::endl;
+        std::cout<<"OUT OF BOUNDS!!!!  inputeta: "<<inputEta<<std::endl;
     return -9;
   }
 
@@ -371,7 +384,7 @@ private:
   };
 
 
-  float converRCTEtaLeftBound (uint32_t inputEta) {
+  float convertRCTEtaLeftBound (uint32_t inputEta) {
     const double regionEtaValues[22] ={
       -5 
       -4.5,
