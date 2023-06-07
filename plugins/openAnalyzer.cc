@@ -132,7 +132,12 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       allRegions[ieta][iphi].phiLow = convertRCTPhiLowerBound(iphi);
       allRegions[ieta][iphi].etaLeft = convertRCTEtaLeftBound(ieta);
       allRegions[ieta][iphi].etaRight = convertRCTEtaRightBound(ieta);
- 
+      allRegions[ieta][iphi].hcalEnergy = 0; 
+      allRegions[ieta][iphi].ecalEnergy = 0;
+      allRegions[ieta][iphi].calEnergy = 0;
+      
+
+                                                                                                              
 
 
 
@@ -164,6 +169,9 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     int towerEta = convertEtaToTowerEta(pfCand.positionAtECALEntrance().eta());
     int towerPhi = convertPhiToTowerPhi(pfCand.positionAtECALEntrance().phi()); 
     //find the appropriate region and add in region energy to the tRegion
+                                                                                                              
+    std::cout<< "ecal energy:" << ecalEnergy<< std::endl;                                                                                                        
+    std::cout<< "hcal energy:" << hcalEnergy<< std::endl;    
 
     //Add that to the correct tRegion in the AllRegions collection
 	
@@ -198,7 +206,11 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
 	  allRegions[Region_ieta][Region_iphi].calEnergy = hcalEnergy + ecalEnergy; 
 
-	  
+	  /*
+	  std::cout<< "ecal energy:" << allRegions[Region_ieta][Region_iphi].ecalEnergy<< std::endl; 
+	  std::cout<< "hcal energy:" << allRegions[Region_ieta][Region_iphi].hcalEnergy<< std::endl;
+	  std::cout<< "cal energy:" << allRegions[Region_ieta][Region_iphi].calEnergy<<std::endl;
+	  */
 
     ///////ignore for now
     //if(i<20){
