@@ -52,11 +52,7 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
 #endif
   //now do what ever initialization is needed
   
-  folder = tfs_-> mkdir("data");
-
-  
-  
-  regionTree = folder.make<TTree>("EfficiencyTree", "Efficiency Tree");
+  regionTree = tfs_->make<TTree>("EfficiencyTree", "Efficiency Tree");
   regionTree->Branch("run",        &run,     "run/I");
   regionTree->Branch("lumi",       &lumi,    "lumi/I");
   regionTree->Branch("event",      &event,   "event/I");
@@ -72,22 +68,22 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
   regionTree->Branch("vRegionEcal", &vRegionEcal );
   regionTree->Branch("vRegionHcal", &vRegionHcal );
   
-  nEvents       = folder.make<TH1F>( "nEvents"  , "nEvents", 2,  0., 1. );
+  nEvents       = tfs_->make<TH1F>( "nEvents"  , "nEvents", 2,  0., 1. );
 
-  regionHitEta  = folder.make<TH1F>( "regionHit_eta"  , "eta", 16, 1, 16. );
-  regionHitPhi  = folder.make<TH1F>( "regionHit_phi"  , "phi", 16, 1, 16. );
-  regionTotal   = folder.make<TH1F>( "regionHit_total"  , "fullmap", 16, 1, 16. );
+  regionHitEta  = tfs_->make<TH1F>( "regionHit_eta"  , "eta", 16, 1, 16. );
+  regionHitPhi  = tfs_->make<TH1F>( "regionHit_phi"  , "phi", 16, 1, 16. );
+  regionTotal   = tfs_->make<TH1F>( "regionHit_total"  , "fullmap", 16, 1, 16. );
 
-  regionEta     = folder.make<TH1F>( "region_eta"  , "eta", 22, 1, 22. );
-  regionPhi     = folder.make<TH1F>( "region_phi"  , "phi", 72, 1, 72. );
-  regionPt      = folder.make<TH1F>( "region_pt"  , "pt", 100, 0, 100. );
+  regionEta     = tfs_->make<TH1F>( "region_eta"  , "eta", 22, 1, 22. );
+  regionPhi     = tfs_->make<TH1F>( "region_phi"  , "phi", 72, 1, 72. );
+  regionPt      = tfs_->make<TH1F>( "region_pt"  , "pt", 100, 0, 100. );
  
-  regionCal     = folder.make<TH1F>("region_cal", "Cal", 10, 0 ,100);  
-  regionHcal    = folder.make<TH1F>("region_hcal","Ecal", 10, 0, 100 ) ;
-  regionEcal    = folder.make<TH1F>("region_ecal"," Hcal", 10 , 0 , 100) ; 
+  regionCal     = tfs_->make<TH1F>("region_cal", "Cal", 10, 0 ,100);  
+  regionHcal    = tfs_->make<TH1F>("region_hcal","Ecal", 10, 0, 100 ) ;
+  regionEcal    = tfs_->make<TH1F>("region_ecal"," Hcal", 10 , 0 , 100) ; 
  
-regionEtaFine   = folder.make<TH1F>( "region_eta_Fine"  , "eta", 88, 1, 88. );
-regionPhiFine   = folder.make<TH1F>( "region_phi_Fine"  , "phi", 72, 1, 72. );
+regionEtaFine   = tfs_->make<TH1F>( "region_eta_Fine"  , "eta", 88, 1, 88. );
+regionPhiFine   = tfs_->make<TH1F>( "region_phi_Fine"  , "phi", 72, 1, 72. );
 
   
 
