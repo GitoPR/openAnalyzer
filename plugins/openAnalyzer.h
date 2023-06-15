@@ -88,7 +88,7 @@ private:
     int phiUp;
     int phiLow;
   };
-  
+
   struct tRegion{
     float pt;
     int iEta;
@@ -236,7 +236,7 @@ private:
    */
   
   float convertRCTPhiCentral(uint32_t inputPhi) {
-    const double regionPhiValues[20] = {
+    const double regionPhiValues[18] = {
 					0.000, //0th region
 					0.349, //1st region
 					0.698, //2nd region
@@ -265,27 +265,27 @@ private:
 
   //FINISHME
    float convertRCTPhiUpperBound(uint32_t inputPhi) {
-   const double regionPhiValues[20] = {
+   const double regionPhiValues[18] = {
 
 
 					0.174, //0th region upper bound
 					0.523, //1st region upper bound
 					0.872, //2nd region upper bound
 					1.221, //3rd region upper bound
-					1.570, //...
-					1.919,
-					2.268,
-					2.617,
-					2.967,
-					-2.967,
-					-2.617,
-					-2.268,
-					-1.919,
-					-1.570,
-					-1.221,
-					-0.872,
-					-0.523,
-					-0.174
+					1.570, //4
+					1.919, //5 
+					2.268, //6
+					2.617, //7
+					2.967, //8
+					-2.967,//9
+					-2.617,//10
+					-2.268,//11
+					-1.919, //12
+					-1.570, //13 
+					-1.221, //14
+					-0.872, //15
+					-0.523, //16 
+					-0.174 //17 
 
 
    };
@@ -300,25 +300,25 @@ private:
 
      
         float convertRCTPhiLowerBound(uint32_t inputPhi) {
-   const double regionPhiValues[20] = {
-					-0.174, //
-					0.174, //0th region 
-					0.523, //1st region 
-					0.872, //2nd region 
-					1.221, //3rd region 
-					1.570, //...
-					1.919,
-					2.268,
-					2.617,
-					2.967,
-					-2.967,
-					-2.617,
-					-2.268,
-					-1.919,
-					-1.570,
-					-1.221,
-					-0.872,
-					-0.523
+   const double regionPhiValues[18] = {
+					-0.174, //0
+					0.174, //1th region 
+					0.523, //2st region 
+					0.872, //3nd region 
+					1.221, //4rd region 
+					1.570, //5
+					1.919, //6
+					2.268, //7
+					2.617, //8 
+					2.967, //9 
+					-2.967, //10
+					-2.617, //11
+					-2.268, //12
+					-1.919,//13 
+					-1.570, //14
+					-1.221,//15
+					-0.872,//16
+					-0.523//17 
    };
    return regionPhiValues[inputPhi];
  };

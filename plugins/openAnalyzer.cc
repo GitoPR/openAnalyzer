@@ -132,12 +132,12 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       allRegions[ieta][iphi].ecalEnergy = 0;
       allRegions[ieta][iphi].calEnergy = 0;
       
-      //std::cout<< "iphi" << allRegions[ieta][iphi].phi << std::endl;
+      //      std::cout<< "iphi" << allRegions[ieta][iphi].phi << std::endl;
                                                                                                               
 
 
 
- // COMPLETE ME: add in the left and right values for each eta and phi value
+ 
 
     }
   }
@@ -171,42 +171,62 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     //Add that to the correct tRegion in the AllRegions collection
 	
-	int eta = pfCand.positionAtECALEntrance().eta();
-	int phi = pfCand.positionAtECALEntrance().phi();
+	float eta = pfCand.positionAtECALEntrance().eta();
+	float phi = pfCand.positionAtECALEntrance().phi();
 	int Region_ieta = 0; 
 	int Region_iphi = 0; 
 
-   
+
+
+	//         	std::cout<<"phi :"<< phi <<std::endl;
 
 	for(int ieta = 0; ieta < 22; ieta ++ ) {
 
 	  if (eta < convertRCTEtaRightBound(ieta) && eta > convertRCTEtaLeftBound(ieta)){
 	    
+
 	    Region_ieta = ieta; 
-	       break; 
+	        
 	  }
 
 	}
+
+	// make exception for the 9th region because it is the only region where the upperbound is not greater than the lowerbound in the notation used
+
+	
 	  for(int iphi = 0 ; iphi < 18 ; iphi++) {
+
+	    
+	 
 
 	    if ( phi > convertRCTPhiLowerBound(iphi) && phi < convertRCTPhiUpperBound(iphi)){
 	      
+
+
 	      Region_iphi = iphi; 
-	      break;
+
+	      //         std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;
+
+	     
 	      
 	    }
+
+	    
       }    
+
+	  //std::cout<< "phi central from the region chosen : " << allRegions[Region_ieta][Region_iphi].phi << std::endl;   
 
 	  allRegions[Region_ieta][Region_iphi].hcalEnergy = hcalEnergy;
 	  allRegions[Region_ieta][Region_iphi].ecalEnergy = ecalEnergy;
   
 	  allRegions[Region_ieta][Region_iphi].calEnergy = hcalEnergy + ecalEnergy; 
 
-	  /*
-	  std::cout<< "ecal energy:" << allRegions[Region_ieta][Region_iphi].ecalEnergy<< std::endl; 
+	  
+	  
+	  /*  std::cout<< "ecal energy:" << allRegions[Region_ieta][Region_iphi].ecalEnergy<< std::endl; 
 	  std::cout<< "hcal energy:" << allRegions[Region_ieta][Region_iphi].hcalEnergy<< std::endl;
-	  std::cout<< "cal energy:" << allRegions[Region_ieta][Region_iphi].calEnergy<<std::endl;
-	  */
+	  std::cout<< "cal energy:" << allRegions[Region_ieta][Region_iphi].calEnergy<<std::endl; */ 
+	  
 
     ///////ignore for now
     //if(i<20){
@@ -222,14 +242,27 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
   for(auto region: allRegions){
+
     
-    //std::cout<<"region eta,phi: "<<eta<<" , "<<phi<<std::endl;
+    //     std::cout<<"region eta,phi: "<<region->eta<<" , "<<region->phi<<std::endl;
+
+
+    /*
+    for(int ieta = 0; ieta < 22; ieta++){
+      for(int iphi = 0; iphi < 18; iphi++){
+
+    std::cout<<"phi: "<<allRegions[ieta][iphi].phi<<std::endl;
+    std::cout<<"hcal: "<<allRegions[ieta][iphi].hcalEnergy<<std::endl;
+      }
+      }*/ 
+
     vRegionEt.push_back(region->pt);
     vRegionEta.push_back(region->eta);
     vRegionPhi.push_back(region->phi);
-    vRegionCal.push_back(region->calEnergy); 
+
+    /*    vRegionCal.push_back(region->calEnergy); 
     vRegionEcal.push_back(region->ecalEnergy); 
-    vRegionHcal.push_back(region->hcalEnergy);
+    vRegionHcal.push_back(region->hcalEnergy); */ 
 
     //we don't have this for now
     //vRegionEG.push_back(isEgammaLike);
@@ -238,14 +271,15 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     regionPt->Fill(region->pt);
     regionEta->Fill(region->eta);
     regionPhi->Fill(region->phi);
+    /*
     regionCal->Fill(region->calEnergy);
     regionEcal->Fill(region->hcalEnergy);
-    regionHcal->Fill(region->ecalEnergy);  
+    regionHcal->Fill(region->ecalEnergy);  */
 
 }
   regionTree->Fill();
 
-  //I think this might be the proble, cause the Tree branches dont include vRegionCal and so on// 
+   
 
  
 
