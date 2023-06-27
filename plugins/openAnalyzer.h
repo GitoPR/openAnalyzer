@@ -1,4 +1,3 @@
-
 // this is a test for github
 #ifndef openAnalyzer_H
 #define openAnalyzer_H
@@ -118,7 +117,8 @@ private:
   std::vector<float> vRegionCal;
   std::vector<float> vRegionEcal;
   std::vector<float> vRegionHcal; 
-
+  std::vector<float> vRegionInputEta; 
+  std::vector<float> vRegionInputPhi; 
 
 
   TH1F* nEvents;
@@ -132,6 +132,8 @@ private:
   TH1F* regionHcal;
   TH1F* regionEcal;
   TH1F* regionTotal;
+  TH1F* regionInputEta; 
+  TH1F* regionInputPhi; 
 
   TH1F* regionHitEta;
   TH1F* regionHitPhi;
@@ -240,6 +242,7 @@ private:
 					0.000, //0th region
 					0.349, //1st region
 					0.698, //2nd region
+
 					1.047, //.... 
 					1.396,
 					1.744,
@@ -278,7 +281,7 @@ private:
 					2.617, //7
 					2.967, //8
 					-2.967,//9
-					-2.617,//10
+ 					-2.617,//10
 					-2.268,//11
 					-1.919, //12
 					-1.570, //13 
@@ -318,7 +321,7 @@ private:
 					-1.570, //14
 					-1.221,//15
 					-0.872,//16
-					-0.523//17 
+					-0.523 //17 
    };
    return regionPhiValues[inputPhi];
  };
@@ -340,37 +343,37 @@ private:
       -0.522,
       -0.174, //eta 10
       0.174,  // eta 11
-      0.522,
-      0.87,
-      1.218,
-      1.566,
-      1.93,
-      2.5,
-      3.25,
-      3.75,
-      4.25,
-      4.75
+      0.522, // 12 
+      0.87, //13
+      1.218, //14
+      1.566, //15
+      1.93, //16
+      2.5, //17 
+      3.25, //18 
+      3.75, //19 
+      4.25, //20 
+      4.75 //21 
     };
     return regionEtaValues[inputEta];
   };
 
   float convertRCTEtaRightBound (uint32_t inputEta) {
     const double regionEtaValues[22] = {
-     -4.5,
-     -4,
-     -3.5,
-     -3,
-     -2.172,
-     -1.740,
-     -1.392,
-     -1.044,
-     -0.696,
-     -0.348,
-     0,
-     0.348,
-     0.696,
-     1.044,
-     1.392,
+      -4.5, //1 
+      -4, //2
+      -3.5, //3
+      -3, //4
+      -2.172, //5 
+      -1.740, //6 
+      -1.392, //7 
+      -1.044, //8
+      -0.696, //9 
+      -0.348, //10
+      0,//11
+      0.348,//12
+      0.696, //13
+      1.044, //14
+      1.392, //15
      1.74,
      2.172,
      3.00,
@@ -386,20 +389,20 @@ private:
 
   float convertRCTEtaLeftBound (uint32_t inputEta) {
     const double regionEtaValues[22] ={
-      -5 
-      -4.5,
-      -4,
-      -3.5,
-      -3,
-      -2.172,
-      -1.740,
-      -1.392,
-      -1.044,
-      -0.696,
-      -0.348,
-      0,
-      0.348,
-      0.696,
+      -5,  //1
+      -4.5, //2 
+      -4, //3 
+      -3.5,// 4
+      -3, //5 
+      -2.172, //6 
+      -1.740,//7 
+      -1.392,//8 
+      -1.044,// 9
+      -0.696, //10
+      -0.348, //11
+      0, //12
+      0.348, //13
+      0.696, //14 
       1.044,
       1.392,
       1.74,

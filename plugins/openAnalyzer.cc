@@ -62,7 +62,8 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
   regionTree->Branch("vRegionPhi", &vRegionPhi );
   regionTree->Branch("vRegionEG",  &vRegionEG  );
   regionTree->Branch("vRegionTau", &vRegionTau );
-  
+  regionTree->Branch("vRegionInputPhi", &vRegionInputPhi) ; 
+  regionTree->Branch("vRegionInputEta", &vRegionInputEta ) ; 
 
   regionTree->Branch("vRegionCal", &vRegionCal );
   regionTree->Branch("vRegionEcal", &vRegionEcal );
@@ -78,15 +79,15 @@ openAnalyzer::openAnalyzer(const edm::ParameterSet& iConfig)
   regionPhi     = tfs_->make<TH1F>( "region_phi"  , "phi", 72, 1, 72. );
   regionPt      = tfs_->make<TH1F>( "region_pt"  , "pt", 100, 0, 100. );
  
-  regionCal     = tfs_->make<TH1F>("region_cal", "Cal", 10, 0 ,100);  
-  regionHcal    = tfs_->make<TH1F>("region_hcal","Ecal", 10, 0, 100 ) ;
-  regionEcal    = tfs_->make<TH1F>("region_ecal"," Hcal", 10 , 0 , 100) ; 
+  regionCal     = tfs_->make<TH1F>("region_cal", "Cal", 10, 0 ,10);  
+  regionHcal    = tfs_->make<TH1F>("region_hcal","Ecal", 10, 0, 10 ) ;
+  regionEcal    = tfs_->make<TH1F>("region_ecal"," Hcal", 10 , 0 , 10) ; 
  
 regionEtaFine   = tfs_->make<TH1F>( "region_eta_Fine"  , "eta", 88, 1, 88. );
 regionPhiFine   = tfs_->make<TH1F>( "region_phi_Fine"  , "phi", 72, 1, 72. );
 
-  
-
+ regionInputEta     = tfs_->make<TH1F>( "region_ieta"  , "ieta", 22, 1, 22. ); 
+ regionInputPhi     = tfs_->make<TH1F>( "region_iphi"  , "iphi", 22, 1, 22. ); 
 
 }
 
@@ -151,6 +152,8 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   vRegionCal.clear();
   vRegionEcal.clear();
   vRegionHcal.clear();
+  vRegionInputEta.clear();
+  vRegionInputPhi.clear();
   //Tau and EG are not needed currently
   vRegionTau.clear();
   vRegionEG.clear();
@@ -166,8 +169,8 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     int towerPhi = convertPhiToTowerPhi(pfCand.positionAtECALEntrance().phi()); 
     //find the appropriate region and add in region energy to the tRegion
                                                                                                               
-    /*    std::cout<< "ecal energy:" << ecalEnergy<< std::endl;                                                                                                        
-	  std::cout<< "hcal energy:" << hcalEnergy<< std::endl;    */
+    //  std::cout<< "ecal energy:" << ecalEnergy<< std::endl;                                                                                                        
+     std::cout<< "hcal energy:" << hcalEnergy<< std::endl; 
 
     //Add that to the correct tRegion in the AllRegions collection
 	
@@ -177,49 +180,57 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	int Region_iphi = 0; 
 
 
-
+	
 	//         	std::cout<<"phi :"<< phi <<std::endl;
 
+
+	// Iterate through regions, find the bounds for given phi, store region number. 
+	
 	for(int ieta = 0; ieta < 22; ieta ++ ) {
 
-	  if (eta < convertRCTEtaRightBound(ieta) && eta > convertRCTEtaLeftBound(ieta)){
+	  if (eta > convertRCTEtaLeftBound(ieta) && eta < convertRCTEtaRightBound(ieta)){
 	    
 
 	    Region_ieta = ieta; 
-	        
+
+	    /*	    std::cout<<"eta: "<<eta<<std::endl;
+	    	    std::cout<<"Region ieta: "<< Region_ieta<<std::endl; */ 
 	  }
 
 	}
 
-	// make exception for the 9th region because it is the only region where the upperbound is not greater than the lowerbound in the notation used
-
+	 
 	
 	  for(int iphi = 0 ; iphi < 18 ; iphi++) {
 
-	    
-	 
-
 	    if ( phi > convertRCTPhiLowerBound(iphi) && phi < convertRCTPhiUpperBound(iphi)){
-	      
-
-
+	     
 	      Region_iphi = iphi; 
 
-	      //         std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;
-
-	     
+	      //	               std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;
 	      
 	    }
 
 	    
       }    
 
-	  //std::cout<< "phi central from the region chosen : " << allRegions[Region_ieta][Region_iphi].phi << std::endl;   
+	  // Exception to account for the special case of region 9. 
 
-	  allRegions[Region_ieta][Region_iphi].hcalEnergy = hcalEnergy;
-	  allRegions[Region_ieta][Region_iphi].ecalEnergy = ecalEnergy;
-  
-	  allRegions[Region_ieta][Region_iphi].calEnergy = hcalEnergy + ecalEnergy; 
+	  if(phi > 2.967059728 || phi < -2.967059728){
+
+	    Region_iphi = 9;
+
+	  }
+
+
+	  /*
+	  	  	          std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;                                                                                   
+				  std::cout<<"Region ieta: "<< Region_ieta<<std::endl;  */
+	  //	  std::cout<< "phi central from the region chosen : " << allRegions[Region_ieta][Region_iphi].phi << std::endl;   
+
+	  allRegions[Region_ieta][Region_iphi].hcalEnergy += hcalEnergy;
+	  allRegions[Region_ieta][Region_iphi].ecalEnergy += ecalEnergy;
+	  allRegions[Region_ieta][Region_iphi].calEnergy += hcalEnergy + ecalEnergy; 
 
 	  
 	  
@@ -241,28 +252,28 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
 
 
-  for(auto region: allRegions){
+  /*for(auto region: allRegions){
 
     
     //     std::cout<<"region eta,phi: "<<region->eta<<" , "<<region->phi<<std::endl;
 
 
-    /*
+    
     for(int ieta = 0; ieta < 22; ieta++){
       for(int iphi = 0; iphi < 18; iphi++){
 
     std::cout<<"phi: "<<allRegions[ieta][iphi].phi<<std::endl;
     std::cout<<"hcal: "<<allRegions[ieta][iphi].hcalEnergy<<std::endl;
       }
-      }*/ 
+      } 
 
     vRegionEt.push_back(region->pt);
     vRegionEta.push_back(region->eta);
     vRegionPhi.push_back(region->phi);
 
-    /*    vRegionCal.push_back(region->calEnergy); 
+      vRegionCal.push_back(region->calEnergy); 
     vRegionEcal.push_back(region->ecalEnergy); 
-    vRegionHcal.push_back(region->hcalEnergy); */ 
+    vRegionHcal.push_back(region->hcalEnergy); 
 
     //we don't have this for now
     //vRegionEG.push_back(isEgammaLike);
@@ -271,17 +282,46 @@ void openAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     regionPt->Fill(region->pt);
     regionEta->Fill(region->eta);
     regionPhi->Fill(region->phi);
-    /*
+    
     regionCal->Fill(region->calEnergy);
     regionEcal->Fill(region->hcalEnergy);
-    regionHcal->Fill(region->ecalEnergy);  */
+    regionHcal->Fill(region->ecalEnergy);  
+    
+}
+      regionTree->Fill(); */ 
+
+  for(int ieta = 0; ieta < 22; ieta++){                                                                                                                                                                   
+    for(int iphi = 0; iphi < 18; iphi++){ 
+
+      //             std::cout<<"hcal: "<<allRegions[ieta][iphi].hcalEnergy<<std::endl; 
+
+      vRegionEt.push_back(allRegions[ieta][iphi].pt);                                               
+      vRegionEta.push_back(allRegions[ieta][iphi].eta);                                                  
+      vRegionPhi.push_back(allRegions[ieta][iphi].phi);                                                
+      vRegionCal.push_back(allRegions[ieta][iphi].calEnergy);   
+      vRegionEcal.push_back(allRegions[ieta][iphi].ecalEnergy);                                           
+      vRegionHcal.push_back(allRegions[ieta][iphi].hcalEnergy); 
+      vRegionInputEta.push_back(allRegions[ieta][iphi].iEta);
+      vRegionInputPhi.push_back(allRegions[ieta][iphi].iPhi); 
+
+      regionPt->Fill(allRegions[ieta][iphi].pt);                                                        
+      regionEta->Fill(allRegions[ieta][iphi].eta);             
+      regionPhi->Fill(allRegions[ieta][iphi].phi);
+      regionCal->Fill(allRegions[ieta][iphi].calEnergy);  
+      regionEcal->Fill(allRegions[ieta][iphi].ecalEnergy);                                  
+      regionHcal->Fill(allRegions[ieta][iphi].hcalEnergy);
+      regionInputEta->Fill(allRegions[ieta][iphi].iEta); 
+      regionInputPhi->Fill(allRegions[ieta][iphi].iPhi); 
+ }
 
 }
-  regionTree->Fill();
+      regionTree->Fill();
+      
+             for (const auto& element : vRegionHcal) {
+	std::cout << element << " ";
+      }
 
-   
-
- 
+      std::cout << std::endl; 
 
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
