@@ -167,6 +167,12 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   using namespace edm;
  
+  run = evt.id().run();
+  lumi = evt.id().luminosityBlock();
+  event = evt.id().event();
+
+  //gotta push back the run, lumi, event information into the corresponding ttree vector. 
+
   //edm::Handle<vector <pat::PackedCandidate> > pfCands;
   edm::Handle<pat::PackedCandidateCollection> pfCands;
   if(!iEvent.getByToken(pfToken_, pfCands))
@@ -178,6 +184,14 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     std::cout <<"Error GETTING regions" << std:: endl; 
   std::cout <<"size of regions" << regions -> size() << std::endl; 
 
+  //Working with the L1CaloRegion
+
+  
+
+  
+
+  // +++++++++++++++++++++++++++++++++++
+  // Working with PfCandidates
   //First, create the regions
   tRegion allRegions[22][18];
 
@@ -263,15 +277,18 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
    
     // get HCAL and ECAL energy
-    float hcalEnergy = pf.energy() * pf.hcalFraction()  ; // There seems to be something weird going on with the Raw/noRaw energy descriptions, ask
-    float ecalEnergy = pf.energy() * (pf.rawCaloFraction() - pf.hcalFraction()) ; // ask if this is correct  
+    //After a few difficulties with trying to access the energies this is what we think works. 
+    float calEnergy  = pf.caloFraction()* pf.energy(); 
+    float hcalEnergy = calEnergy * pf.hcalFraction()  ; 
+    float ecalEnergy = calEnergy - hcalEnergy;  
 
-    std::cout << "pf" << pf<< std::endl;
-    std::cout << "calEnergy:" << pf.rawCaloFraction() << std::endl;
-    std::cout << "ecalEnergy:" << ecalEnergy << std::endl; 
-    std::cout << "hcalEnergy:" << hcalEnergy << std::endl; 
+    //     std::cout << "pf" << pf<< std::endl;
+    // std::cout << "calEnergy:" << pf.caloFraction()* pf.energy() << std::endl;
+    //    std::cout << "ecalEnergy:" << ecalEnergy << std::endl; 
+    //    std::cout << "hcalEnergy:" << hcalEnergy << std::endl; 
 
     //find the appropriate region and add in region energy to the tRegion
+    //We're grabbing these from the corrected/calculated propagated particles
        float eta = corrPF.Eta(); 
        float phi = corrPF.Phi(); 
 
@@ -307,7 +324,7 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	// Assign the hcal, ecal , and cal energies to the appropriate, just found region 
 	  allRegions[Region_ieta][Region_iphi].hcalEnergy += hcalEnergy;
 	  allRegions[Region_ieta][Region_iphi].ecalEnergy += ecalEnergy;
-	  allRegions[Region_ieta][Region_iphi].calEnergy += hcalEnergy + ecalEnergy; 
+	  allRegions[Region_ieta][Region_iphi].calEnergy += calEnergy;
 
 
 	  //Some Checks
@@ -383,7 +400,9 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       regionPt->Fill(allRegions[ieta][iphi].pt);                                                        
       regionEta->Fill(allRegions[ieta][iphi].eta);             
       regionPhi->Fill(allRegions[ieta][iphi].phi);
+      //      std::cout << "allRegions[ieta][iphi].calEnergy : " << allRegions[ieta][iphi].calEnergy << std::endl;
       regionCal->Fill(allRegions[ieta][iphi].calEnergy);  
+      
       regionEcal->Fill(allRegions[ieta][iphi].ecalEnergy);                                  
       regionHcal->Fill(allRegions[ieta][iphi].hcalEnergy);
       regionInputEta->Fill(allRegions[ieta][iphi].iEta); 
@@ -391,7 +410,17 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  }
 
 }
-  //      regionTree->Fill();
+
+       regionTree->Fill();
+
+       //       for(auto vi = std::begin(vRegionCal); vi != std::end(vRegionCal) ; vi++) {
+
+       //double value = *vi; 
+	   
+       //  std::cout << "value :" << value << std::endl;   
+       
+       }
+
 
       for (vector<L1CaloRegion>::const_iterator testRegion = regions->begin();  testRegion != regions -> end(); ++testRegion){
 
@@ -408,6 +437,9 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 	
   }
+
+
+
 
       regionTree->Fill(); 
 
