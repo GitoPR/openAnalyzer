@@ -52,8 +52,8 @@ using std::vector;
 
 
 compAnalyzer::compAnalyzer(const edm::ParameterSet& iConfig)
-  : pfToken_(consumes<vector <pat::PackedCandidate> >(iConfig.getParameter<edm::InputTag>("pfcands"))),
-    regionSource_(consumes<vector<L1CaloRegion> >(iConfig.getParameter<edm::InputTag>("L1CaloRegion")))
+  : pfToken_(consumes<vector <pat::PackedCandidate> >(iConfig.getParameter<edm::InputTag>("pfcands")))
+    //    regionSource_(consumes<vector<L1CaloRegion> >(iConfig.getParameter<edm::InputTag>("L1CaloRegion")))
 
 
 
@@ -83,14 +83,6 @@ compAnalyzer::compAnalyzer(const edm::ParameterSet& iConfig)
   regionTree->Branch("vRegionEcal", &vRegionEcal );
   regionTree->Branch("vRegionHcal", &vRegionHcal );
   
-  /*  // CREATE THE BRANCHES FOR THE COMPARISON W/ RUN3NTUPLIZER 
-  regionTree -> Branch ("compEvents", &compEvent, "event/I")
- 
-
- regionTree -> Branch ("comp-nvtx", &compnvtx, "comp-nvtx/D") 
-
-  */ 
-
   regionTree -> Branch ("vcompRegionEta", &vcompRegionEta);
   regionTree -> Branch ("vcompRegionPhi" , &vcompRegionPhi);
   regionTree -> Branch ("vcompRegionEt", &vcompRegionEt);
@@ -122,30 +114,10 @@ compAnalyzer::compAnalyzer(const edm::ParameterSet& iConfig)
   regionInputEta     = tfs_->make<TH1F>( "region_ieta"  , "ieta", 22, 1, 22. ); 
   regionInputPhi     = tfs_->make<TH1F>( "region_iphi"  , "iphi", 22, 1, 22. ); 
 
-
- // Initialize the comparison Tree 
-
- /* comparisonTree = tfs_->make<TTree>("ComparisonTree", "Comparison Tree");
-
- comparisonTree -> Branch ("" , &, ""); 
- comparisonTree -> Branch ("" , &, ""); 
- comparisonTree -> Branch ("" , &, ""); 
- comparisonTree -> Branch ("" , &, ""); 
-
- comparisonTree -> Branch ("" , &);
- comparisonTree -> Branch ("" , &);
- comparisonTree -> Branch ("" , &); 
- comparisonTree -> Branch ("" , &); 
- comparisonTree -> Branch ("" , &); 
- comparisonTree -> Branch ("" , &); 
- comparisonTree -> Branch ("" , &); 
- comparisonTree -> Branch ("" , &);
- comparisonTree -> Branch ("" , &); 
- comparisonTree -> Branch ("" , &);
-
-comp_nEvents       = tfs_->make<TH1F>( "nEvents"  , "nEvents", 2,  0., 1. ); 
-
- */ 
+  l1CaloHist  = tfs_->make<TH2F>("l1CaloHist", "Eta/Phi Et distribution", 22, 0, 22 , 18,0, 18 );
+  pfcCalHist = tfs_->make<TH2F>("ParticleCandidateHist", "Eta vs. Phi Cal distribution;eta;phi", 22,0,22,18,0,18); 
+  pfcEcalHist = tfs_->make<TH2F>("pfcEcalHist", "Eta vs. Phi Ecal distribution;eta;phi", 20,-3,3,20,-3.14,3.14);
+  pfcHcalHist = tfs_->make<TH2F>("pfcHcalHist", "Eta vs. Phi Hcal distribution;eta;phi", 20,-3,3,20,-3.14,3.14);
 } 
 
 compAnalyzer::~compAnalyzer() {
@@ -167,10 +139,11 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   using namespace edm;
  
-  run = evt.id().run();
-  lumi = evt.id().luminosityBlock();
-  event = evt.id().event();
+    run = iEvent.id().run();
+    lumi = iEvent.id().luminosityBlock();
+    event = iEvent.id().event();
 
+     
   //gotta push back the run, lumi, event information into the corresponding ttree vector. 
 
   //edm::Handle<vector <pat::PackedCandidate> > pfCands;
@@ -179,19 +152,12 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     std::cout<<"ERROR GETTING THE PFCANDS"<<std::endl;
   std::cout<<"size of pfCands: "<<pfCands->size()<<std::endl;
 
-  edm::Handle<vector <L1CaloRegion> > regions;
+  /*  edm::Handle<vector <L1CaloRegion> > regions;
   if(!iEvent.getByToken(regionSource_, regions))
     std::cout <<"Error GETTING regions" << std:: endl; 
-  std::cout <<"size of regions" << regions -> size() << std::endl; 
+    std::cout <<"size of regions" << regions -> size() << std::endl; */ 
 
-  //Working with the L1CaloRegion
 
-  
-
-  
-
-  // +++++++++++++++++++++++++++++++++++
-  // Working with PfCandidates
   //First, create the regions
   tRegion allRegions[22][18];
 
@@ -229,14 +195,11 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //Tau and EG are not needed currently
   //vRegionTau.clear();
   // vRegionEG.clear();
-  propagatedPF.clear() ; 
+  //  propagatedPF.clear() ; 
   // std::cout << "check1"  << std::endl;
   for (const auto& pf : *pfCands.product()) {
 
-    //     std::cout << "pf:" << pf  << std::endl;
-
-
-      
+     std::cout << "pf:" << pf  << std::endl;
 
     //    reco::CandidatePtr packedcand = pf.sourceCandidatePtr(k);
     //    const reco::PFCandidate* pf_Cand = dynamic_cast<const reco::PFCandidate*>(&(*packedcand));
@@ -272,7 +235,7 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		<< std::endl; */ 
  
 	// I think I might not need this last vector but I'll keep it and ask about it.      
-	propagatedPF.push_back(corrPF);  
+	// propagatedPF.push_back(corrPF);  
 	} 
 
    
@@ -281,57 +244,65 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     float calEnergy  = pf.caloFraction()* pf.energy(); 
     float hcalEnergy = calEnergy * pf.hcalFraction()  ; 
     float ecalEnergy = calEnergy - hcalEnergy;  
-
+    std::cout << "pf.caloFractio: " << pf.caloFraction() << std::endl; 
+    std::cout << "pf.energy: " << pf.energy() << std::endl; 
+    std::cout <<"pf.hcalFraction: " << pf.hcalFraction() << std::endl; 
     //     std::cout << "pf" << pf<< std::endl;
-    // std::cout << "calEnergy:" << pf.caloFraction()* pf.energy() << std::endl;
-    //    std::cout << "ecalEnergy:" << ecalEnergy << std::endl; 
-    //    std::cout << "hcalEnergy:" << hcalEnergy << std::endl; 
+    //     std::cout << "pfc calEnergy:" << pf.caloFraction()* pf.energy() << std::endl;
+    //       std::cout << "pfc ecalEnergy:" << ecalEnergy << std::endl; 
+    //std::cout << "pfc hcalEnergy:" << hcalEnergy << std::endl; 
+
 
     //find the appropriate region and add in region energy to the tRegion
     //We're grabbing these from the corrected/calculated propagated particles
-       float eta = corrPF.Eta(); 
-       float phi = corrPF.Phi(); 
+    
+    float eta = corrPF.Eta(); 
+    float phi = corrPF.Phi(); 
+    //       count  = count + 1 ;
+    //std::cout << "pfc eta:" << eta << std::endl;
+    // std::cout << "pfc phi:" << phi << std::endl;
+    //       std::cout << "\n" << std::endl;
+    
+    int Region_ieta = 0; 
+    int Region_iphi = 0; 
 
-       int Region_ieta = 0; 
-       int Region_iphi = 0; 
-
-	// Iterate through regions, find the bounds for given ieta/iphi then store region number. 
-	for(int ieta = 0; ieta < 22; ieta ++ ) {
-	  if (eta > convertRCTEtaLeftBound(ieta) && eta < convertRCTEtaRightBound(ieta)){
-	    Region_ieta = ieta; 
-
-	  }
-	}
+    // Iterate through regions, find the bounds for given ieta/iphi then store region number. 
+    for(int ieta = 0; ieta < 22; ieta ++ ) {
+      if (eta > convertRCTEtaLeftBound(ieta) && eta < convertRCTEtaRightBound(ieta)){
+	Region_ieta = ieta; 
 	
-	  for(int iphi = 0 ; iphi < 18 ; iphi++) {
-	    if ( phi > convertRCTPhiLowerBound(iphi) && phi < convertRCTPhiUpperBound(iphi)){
-	      Region_iphi = iphi; 
-	      //	               std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;
-	    }
-      }    
-	  // Exception to account for the special case of region 9. 
-	  if(phi > 2.967059728 || phi < -2.967059728){
-	    Region_iphi = 9;
-	  }
+      }
+    }
+    
+    for(int iphi = 0 ; iphi < 18 ; iphi++) {
+      if ( phi > convertRCTPhiLowerBound(iphi) && phi < convertRCTPhiUpperBound(iphi)){
+	Region_iphi = iphi; 
+	//	               std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;
+      }
+    }    
+    // Exception to account for the special case of region 9. 
+    if(phi > 2.967059728 || phi < -2.967059728){
+      Region_iphi = 9;
+    }
+    
+    
+    
+    //        std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;                                                                                   
+    //	std::cout<<"Region ieta: "<< Region_ieta<<std::endl;  
+    
+    
+    
+    // Assign the hcal, ecal , and cal energies to the appropriate, just found region 
+    allRegions[Region_ieta][Region_iphi].hcalEnergy += hcalEnergy;
+    allRegions[Region_ieta][Region_iphi].ecalEnergy += ecalEnergy;
+    allRegions[Region_ieta][Region_iphi].calEnergy += calEnergy;
+    
 
-
-		  /* Some Checks
-	  	  	          std::cout<<"Region Iphi: "<< Region_iphi<<std::endl;                                                                                   
-				  std::cout<<"Region ieta: "<< Region_ieta<<std::endl;  */
-
-
-	
-	// Assign the hcal, ecal , and cal energies to the appropriate, just found region 
-	  allRegions[Region_ieta][Region_iphi].hcalEnergy += hcalEnergy;
-	  allRegions[Region_ieta][Region_iphi].ecalEnergy += ecalEnergy;
-	  allRegions[Region_ieta][Region_iphi].calEnergy += calEnergy;
-
-
-	  //Some Checks
-    	  /*  std::cout<< "ecal energy:" << allRegions[Region_ieta][Region_iphi].ecalEnergy<< std::endl; 
-          std::cout<< "hcal energy:" << allRegions[Region_ieta][Region_iphi].hcalEnergy<< std::endl;
-	  std::cout<< "cal energy:" << allRegions[Region_ieta][Region_iphi].calEnergy<<std::endl; */ 
-
+    //Some Checks
+    /*  std::cout<< "ecal energy:" << allRegions[Region_ieta][Region_iphi].ecalEnergy<< std::endl; 
+	std::cout<< "hcal energy:" << allRegions[Region_ieta][Region_iphi].hcalEnergy<< std::endl;
+	std::cout<< "cal energy:" << allRegions[Region_ieta][Region_iphi].calEnergy<<std::endl; */ 
+    
 
     ///////ignore for now
     //if(i<20){    //std::cout<<"tower eta, tower phi: "<<towerEta<<", "<<towerPhi<<std::endl;
@@ -396,17 +367,27 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       vRegionHcal.push_back(allRegions[ieta][iphi].hcalEnergy); 
       vRegionInputEta.push_back(allRegions[ieta][iphi].iEta);
       vRegionInputPhi.push_back(allRegions[ieta][iphi].iPhi); 
+      
+      pfcCalHist->Fill(allRegions[ieta][iphi].iEta,allRegions[ieta][iphi].iPhi,allRegions[ieta][iphi].calEnergy); 
+      pfcEcalHist->Fill(allRegions[ieta][iphi].eta,allRegions[ieta][iphi].phi,allRegions[ieta][iphi].ecalEnergy);
+      pfcHcalHist->Fill(allRegions[ieta][iphi].eta,allRegions[ieta][iphi].phi,allRegions[ieta][iphi].hcalEnergy);
 
       regionPt->Fill(allRegions[ieta][iphi].pt);                                                        
       regionEta->Fill(allRegions[ieta][iphi].eta);             
       regionPhi->Fill(allRegions[ieta][iphi].phi);
-      //      std::cout << "allRegions[ieta][iphi].calEnergy : " << allRegions[ieta][iphi].calEnergy << std::endl;
+      //std::cout << "allRegions[ieta][iphi].calEnergy : " << allRegions[ieta][iphi].calEnergy << std::endl;
       regionCal->Fill(allRegions[ieta][iphi].calEnergy);  
       
       regionEcal->Fill(allRegions[ieta][iphi].ecalEnergy);                                  
       regionHcal->Fill(allRegions[ieta][iphi].hcalEnergy);
       regionInputEta->Fill(allRegions[ieta][iphi].iEta); 
       regionInputPhi->Fill(allRegions[ieta][iphi].iPhi); 
+
+      //std::cout<<"cal: "<<allRegions[ieta][iphi].calEnergy<<std::endl;
+      //std::cout << "iEta: " << allRegions[ieta][iphi].iEta << std:: endl; 
+      //std::cout<< "iPhi: " << allRegions[ieta][iphi].iPhi << std:: endl;
+
+      
  }
 
 }
@@ -419,30 +400,51 @@ void compAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	   
        //  std::cout << "value :" << value << std::endl;   
        
-       }
-
+       //  }
+       /*
+       uint32_t count = 0  ; 
 
       for (vector<L1CaloRegion>::const_iterator testRegion = regions->begin();  testRegion != regions -> end(); ++testRegion){
 
-    
+	
+	count = count +1 ; 
+	
 	uint32_t test_et = testRegion -> et(); 
 	uint32_t test_rEta =  testRegion -> id().ieta(); 
 	uint32_t test_rPhi = testRegion -> id().iphi();  
 
 
-	// 	std::cout << "test_reta :  " << test_rEta << std::endl; 
+	std::cout << "test_et :  " << test_et << std::endl;	
+	std::cout << "test_reta :  " << test_rEta << std::endl; 
+	std::cout << "test_rPhi:  " << test_rPhi << std::endl;
+	std::cout << "\n" << std::endl; 
+	std::cout << "count :" << count << std::endl; 
+	std::cout << "\n" << std::endl;
+
 	vcompRegionEta.push_back(test_rEta); 
 	vcompRegionPhi.push_back(test_rPhi);
 	vcompRegionEt.push_back(test_et);
-
+	l1CaloHist-> Fill(test_rEta,test_rPhi, test_et);
+ 
 	
   }
 
+ */ 
 
 
+      /*
+      for(auto vi = std::begin(vcompRegionEta); vi != std::end(vcompRegionEta) ; vi++) {                                                                                                                                                                                      
 
-      regionTree->Fill(); 
+      double value = *vi;                                                                                                                                                                                                                                                    
 
+      std::cout << "vcompRegionEta :" << value  << std::endl;                                                                                                                                                                                                                        
+
+        }    
+      */ 
+
+
+       //   regionTree->Fill(); 
+       
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   // if the SetupData is always needed

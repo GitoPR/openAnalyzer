@@ -15,7 +15,7 @@
 #include "TROOT.h"
 #include "TTree.h"
 #include "TFile.h"
-
+#include "TH2F.h"
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
@@ -123,7 +123,7 @@ private:
   std::vector<float> vcompRegionEt;
   std::vector<float> vcompRegionEta;
   std::vector<float> vcompRegionPhi;
-  std::vector<TLorentzVector> propagatedPF; 
+  //  std::vector<TLorentzVector> propagatedPF; 
   TH1F* nEvents;
 
   TH1F* regionEta;
@@ -142,9 +142,14 @@ private:
   TH1F* regionCompEta;
   TH1F* regionCompPhi;
   TH1F* regionCompEt;
-
   TH1F* regionHitEta;
   TH1F* regionHitPhi;
+  TH2F *l1CaloHist;
+  TH2F *pfcCalHist;
+  TH2F *pfcEcalHist;
+  TH2F *pfcHcalHist; 
+
+
   TTree* regionTree;
   TFileDirectory folder;
 
@@ -429,7 +434,7 @@ private:
 
   
   edm::EDGetTokenT <vector <pat::PackedCandidate> > pfToken_;  //used to select what ecal rechits to read from configuration file
-  edm::EDGetTokenT <vector <L1CaloRegion> > regionSource_ ;  //ask professor if this is necessary
+  //  edm::EDGetTokenT <vector <L1CaloRegion> > regionSource_ ;  //ask professor if this is necessary
   //   edm::EDGetTokenT<reco::VertexCollection> vertices_;
   //  edm::EDGetTokenT<EcalTrigPrimDigiCollection> ecalSrc_; 
   //   edm::EDGetTokenT<HcalTrigPrimDigiCollection> hcalSrc_;
